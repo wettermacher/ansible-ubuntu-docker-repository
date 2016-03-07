@@ -1,0 +1,9 @@
+---
+
+- name: check if network {{ docker_network_name }} exists
+  shell: docker network ls
+  register: result
+
+- name: debug
+  shell: docker network create {{ docker_network_name }}
+  when: result.stdout.find("{{ docker_network_name }}") == -1
