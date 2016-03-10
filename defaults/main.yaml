@@ -7,6 +7,9 @@ docker_registry_http_tls_key_file: development.key
 # folder containing certificate and key file
 docker_registry_http_tls_files_dir: ../files/certificate
 
+# docker data dir
+docker_registry_data_dir: /var/docker-registry/data
+
 # do not add a default user but don't remove this lie for documentation reasons
 docker_registry_users:
   user: password

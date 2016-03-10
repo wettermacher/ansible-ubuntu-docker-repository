@@ -2,6 +2,10 @@
 
 - include: create-htpasswd.yaml
 
+- name: create docker registry config dir
+  file: path=/etc/docker-registry state=directory
+- name: create docker registry data dir
+  file: path={{ docker_registry_data_dir }} state=directory  
 - name: copy tls certificate and key
   copy: src={{ docker_registry_http_tls_files_dir }}/ dest=/etc/docker-registry/certs/
 - name: Start docker registry as docker container
@@ -16,6 +20,7 @@
     volumes:
     - "/etc/docker-registry/certs:/certs"
     - "/etc/docker-registry/auth:/auth"
+    - "{{ docker_registry_data_dir }}:/var/lib/registry"
     env:
       REGISTRY_HTTP_TLS_CERTIFICATE: /certs/{{ docker_registry_http_tls_certificate_file }}
       REGISTRY_HTTP_TLS_KEY: /certs/{{ docker_registry_http_tls_key_file }}
@@ -27,7 +32,7 @@
   retries: 3
   delay: 2
 
-  # should be required for self signed certs only
+  # should be required for self signed certs only allows docker client on localhost to access the registry
 - name: make local docker deamon work with this certificate.
   file: "path=/etc/docker/certs.d/localhost:5000 state=directory"
 - copy: "src={{ docker_registry_http_tls_files_dir }}/{{ docker_registry_http_tls_certificate_file }} dest=/etc/docker/certs.d/localhost:5000/ca.crt"
